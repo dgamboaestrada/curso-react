@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>React Tutorial</title>
+    <!-- Not present in the tutorial. Just for basic styling. -->
+    <link rel="stylesheet" href="css/base.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/babel">
+      var ListComponent = React.createClass({
+        getInitialState: function () {
+          return {lista: []};
+        },
+        componentDidMount: function () {
+          $.ajax({
+            url: '/api/comments',
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+              var vincos = data.map(function(elemento) {
+                return {
+                  id: elemento.id,
+                  nombre: elemento.author,
+                  area: elemento.text
+                };
+              });
+              this.setState({lista: vincos});
+            }.bind(this),
+            error: function () {
+              console.log(':(');
+            }.bind(this)
+          });
+        },
+        render: function () {
+          var nodos = this.state.lista.map(function(vinco) {
+            return (
+              <ItemComponent titulo={vinco.nombre}>{vinco.area}</ItemComponent>
+            );
+          });
+          return (
+            <div className="list">
+            Hola Mundo
+            {nodos}
+            </div>
+          );
+        }
+      });
+      var ItemComponent = React.createClass({
+        render: function () {
+          return (
+            <div className="item">
+            <div>{this.props.titulo}</div>
+              {this.props.children}
+            </div>
+          );
+        }
+      });
+      ReactDOM.render(
+        <ListComponent />,
+        document.getElementById('content')
+      );
+    </script>
+  </body>
+</html>
